@@ -1,0 +1,77 @@
+@startuml
+left to right direction
+skinparam usecase {
+  BackgroundColor #EFEFEF
+  BorderColor #333
+}
+skinparam actorStyle awesome
+
+actor ForestRanger as FR
+actor "Vision Camera Hardware" as VCH
+actor "Cloud Notification Service" as CNS
+
+rectangle "Computer Vision-Based Real-Time Detection of Illegal Logging in Forest Ecosystems\n(Jetson Nano Monitoring System)" as System {
+
+    ' --- Use Cases ---
+    usecase "UC-01: Initiate Surveillance" as UC1
+    usecase "UC-02: Monitor Live Feed" as UC2
+    usecase "UC-02a: Analyze Video Frames" as UC2a <<internal>>
+    usecase "UC-03: Receive Alert" as UC3
+    usecase "UC-03a: Trigger Alert" as UC3a <<internal>>
+    usecase "UC-04: Generate Evidence Log" as UC4
+    usecase "UC-04a: Store Metadata" as UC4a <<internal>>
+    usecase "UC-05: Configure Sensitivity" as UC5
+    usecase "UC-06: System Health Check" as UC6 <<maintenance>>
+    usecase "UC-07: Manage Detection Model" as UC7 <<admin>>
+}
+
+' --- Primary Actor Associations ---
+FR -- UC1
+FR -- UC2
+FR -- UC3
+FR -- UC5
+FR -- UC6
+FR -- UC7
+
+' --- Vision Hardware Associations ---
+VCH -- UC1
+VCH -- UC2
+VCH -- UC2a
+VCH -- UC3a
+VCH -- UC4
+
+' --- Cloud Notification Service ---
+CNS -- UC3
+CNS -- UC3a
+
+' --- Include & Extend Relationships ---
+UC1 --> UC6 : <<include>>\nCheck System Status
+UC2 --> UC2a : <<include>>\nFrame-by-frame Analysis
+UC3a --> UC3 : <<include>>\nDeliver Alert
+UC4 --> UC4a : <<include>>\nSave Log Metadata
+
+UC3 --> UC4 : <<extend>>\nIf illegal activity detected
+UC2a --> UC3a : <<extend>>\nDetection threshold exceeded
+
+' --- Notes ---
+note right of UC5
+Configures:
+• Detection threshold
+• Object classification sensitivity
+• Warning cooldown intervals
+end note
+
+note top of UC4
+Evidence log contains:
+• Timestamp
+• Image snapshots
+• Detection type
+• Location metadata
+end note
+
+note bottom of UC7
+Used to update ML model weights
+and classification categories.
+end note
+
+@enduml
